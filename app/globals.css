@@ -1,26 +1,57 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --color-paper: #ffffff;
+  --color-ink: #000000;
+  --color-hot: #f0603a;
+  --color-warm: #ee7a55;
+  --color-blush: #f9e4db;
+  --color-amber: #f5b43c;
+  --color-graphite: #6b6b6b;
+
+  --font-sans: var(--font-inter), system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+
+  --radius-card: 8px;
+  --radius-chip: 4px;
+
+  /* Toggle geometry. Mobile values are swapped in below. */
+  --track-w: 120px;
+  --track-h: 56px;
+  --knob: 44px;
+  --outline: 3px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@media (max-width: 899px) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --track-w: 104px;
+    --track-h: 48px;
+    --knob: 36px;
   }
 }
 
+html {
+  color-scheme: light only;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-feature-settings: "cv11", "ss01";
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Soft state: the on-color at 55% with a 45° hatch of 2px ink lines, 6px apart. */
+.hatch {
+  background-image: repeating-linear-gradient(
+    45deg,
+    var(--color-ink) 0 2px,
+    transparent 2px 6px
+  );
+}
+
+/* Focus: keyboard only, ink, no rounding surprises. */
+:focus-visible {
+  outline: 3px solid var(--color-ink);
+  outline-offset: 3px;
 }
