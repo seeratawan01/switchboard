@@ -3,7 +3,7 @@ import { isId } from "./toggles";
 
 export type Shareable = Pick<EngineState, "on" | "overrides"> & { strict?: boolean };
 
-/** `?on=trauma,funny&over=sarcasm:trauma,expert:eli5` */
+/** `?on=trauma,funny&over=sarcasm:trauma&strict=1` */
 export function encodeState(s: Shareable): string {
   const p = new URLSearchParams();
   if (s.on.length) p.set("on", s.on.join(","));

@@ -31,7 +31,7 @@ type Props = {
 const ON_COLOR: Record<ToggleData["kind"], string> = {
   outcome: "var(--color-hot)",
   style: "var(--color-warm)",
-  depth: "var(--color-warm)",
+  focus: "var(--color-warm)",
 };
 
 export function Toggle({
@@ -108,7 +108,14 @@ export function Toggle({
     if (e.type === "lock" && vs !== "locked") continue;
     seen.add(e.reason);
     const r = REASONS[e.reason];
-    const names = { target: toggle.label, by: TOGGLE_BY_ID[e.by].label, variant: e.type === "soften" ? e.variant : undefined };
+    const byT = TOGGLE_BY_ID[e.by];
+    const names = {
+      target: toggle.label,
+      by: byT.label,
+      targetPhrase: toggle.phrase,
+      byPhrase: byT.phrase,
+      variant: e.type === "soften" ? e.variant : undefined,
+    };
     const tone: ChipTone = r.tier === "house" ? "house" : r.tier === "note" ? "note" : e.type === "warn" ? "warn" : "blush";
     const suffix = e.type === "lock" ? (strict ? " Strict mode." : " Tap the lock to overrule me.") : "";
     chips.push({ reason: e.reason, by: e.by, tone, text: r.chip(names) + suffix });

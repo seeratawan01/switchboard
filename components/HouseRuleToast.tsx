@@ -14,7 +14,8 @@ export function HouseRuleToast({ refusal, onDone }: { refusal: Refusal | null; o
   }, [refusal, onDone]);
 
   const r = refusal ? REASONS[refusal.reason] : null;
-  const label = refusal ? TOGGLE_BY_ID[refusal.id].label : "";
+  const t = refusal ? TOGGLE_BY_ID[refusal.id] : null;
+  const names = { target: t?.label ?? "", by: t?.label ?? "", targetPhrase: t?.phrase ?? "", byPhrase: t?.phrase ?? "" };
 
   return (
     <div className="pointer-events-none fixed inset-x-4 bottom-6 z-40 flex justify-center">
@@ -31,7 +32,7 @@ export function HouseRuleToast({ refusal, onDone }: { refusal: Refusal | null; o
             className="pointer-events-auto max-w-[420px] rounded-[4px] border-[3px] border-ink bg-paper px-3 py-2 text-[14px] leading-[18px] font-semibold"
           >
             {r.tier === "house" && <span className="font-normal text-graphite">House rule: </span>}
-            {r.chip({ target: label, by: label })}
+            {r.chip(names)}
           </motion.div>
         )}
       </AnimatePresence>

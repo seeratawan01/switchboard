@@ -39,18 +39,18 @@ describe("the six interactions from plan §2a fall out of the angles unmodified"
     // and it locks even when Sarcasm is off: the padlock says "you can't turn this on"
     expect(visualState(st(["trauma"]), resolve(st(["trauma"])), "sarcasm")).toBe("locked");
   });
-  it("Trauma ON → Brutal honesty softens to its kind variant", () => {
+  it("Heal ON → Say exactly what I think softens to its kind variant", () => {
     expect(band(compat(θ("trauma"), θ("brutal")))).toBe("soften");
     expect(summary(st(["trauma", "brutal"]), "brutal")).toEqual(["soften:circumplex-soften:trauma:kind"]);
   });
-  it("Trauma ON → Be funny stays on, gentle variant, via the humor sub-model", () => {
+  it("Heal ON → Be funnier stays on, gentle variant, via the humor sub-model", () => {
     expect(band(compat(θ("trauma"), θ("funny")))).toBe("boost");
     const s = st(["trauma", "funny"]);
     const fx = resolve(s);
     expect(visualState(s, fx, "funny")).toBe("soft");
     expect(summary(s, "funny")).toEqual(["soften:humor-gentle:trauma:gentle", "boost:circumplex-boost:trauma"]);
   });
-  it("Cut toxic relationships ON → Brutal honesty is fine", () => {
+  it("Cut off everyone toxic ON → Say exactly what I think is fine", () => {
     expect(band(compat(θ("toxic"), θ("brutal")))).toBe("boost");
     expect(visualState(st(["toxic", "brutal"]), resolve(st(["toxic", "brutal"])), "brutal")).toBe("on");
   });
@@ -58,11 +58,11 @@ describe("the six interactions from plan §2a fall out of the angles unmodified"
     expect(band(compat(θ("toxic"), θ("sarcasm")))).toBe("warn");
     expect(summary(st(["toxic", "funny", "sarcasm"]), "sarcasm")).toContain("warn:circumplex-warn:toxic");
   });
-  it("Cut toxic relationships ON → Be funny is fine", () => {
+  it("Cut off everyone toxic ON → Be funnier is fine", () => {
     expect(band(compat(θ("toxic"), θ("funny")))).toBe("boost");
     expect(visualState(st(["toxic", "funny"]), resolve(st(["toxic", "funny"])), "funny")).toBe("on");
   });
-  it("Cheer me on + Brutal honesty → warning on both", () => {
+  it("Go easy on myself + Say exactly what I think → warning on both", () => {
     expect(band(compat(θ("cheer"), θ("brutal")))).toBe("warn");
     expect(summary(st(["cheer", "brutal"]), "brutal")).toEqual(["warn:circumplex-warn:cheer"]);
     expect(summary(st(["cheer", "brutal"]), "cheer")).toEqual(["warn:circumplex-warn:brutal"]);
@@ -70,29 +70,30 @@ describe("the six interactions from plan §2a fall out of the angles unmodified"
 });
 
 describe("humor sub-model", () => {
-  it("Sarcasm requires Be funny: locked when funny is off, even with nothing else on", () => {
+  it("Be sarcastic requires Be funnier: locked when funny is off, even with nothing else on", () => {
     expect(summary(st([]), "sarcasm")).toEqual(["lock:needs-funny:funny"]);
     expect(summary(st(["sarcasm"]), "sarcasm")).toEqual(["lock:needs-funny:funny"]);
   });
   it("Sarcasm always carries the text-tone warning when on", () => {
     expect(summary(st(["funny", "sarcasm"]), "sarcasm")).toEqual(["warn:sarcasm-text:sarcasm"]);
   });
-  it("Be funny and Sarcasm never argue with each other (requires pairs skip compat)", () => {
+  it("Be funnier and Be sarcastic never argue with each other (requires pairs skip compat)", () => {
     const fx = resolve(st(["funny", "sarcasm"]));
     expect(fx.filter((e) => e.by === "funny" && e.target === "sarcasm")).toEqual([]);
     expect(fx.filter((e) => e.by === "sarcasm" && e.target === "funny")).toEqual([]);
   });
 });
 
-describe("depth axis", () => {
-  it("ELI5 on → Expert locked", () => {
-    expect(summary(st(["eli5"]), "expert")).toEqual(["lock:expertise-reversal:eli5"]);
-    expect(summary(st(["eli5"]), "eli5")).toEqual([]);
+describe("self-focus axis", () => {
+  it("both on → both flagged, nothing locked (the paper separates them, it doesn't forbid them)", () => {
+    const s = st(["reflect", "ruminate"]);
+    expect(summary(s, "reflect")).toEqual(["warn:self-focus:ruminate"]);
+    expect(summary(s, "ruminate")).toEqual(["warn:self-focus:reflect"]);
+    expect(visualState(s, resolve(s), "reflect")).toBe("warn");
   });
-  it("both on → the later one wins", () => {
-    expect(summary(st(["eli5", "expert"]), "eli5")).toEqual(["lock:expertise-reversal:expert"]);
-    expect(summary(st(["eli5", "expert"]), "expert")).toEqual([]);
-    expect(summary(st(["expert", "eli5"]), "expert")).toEqual(["lock:expertise-reversal:eli5"]);
+  it("one on → nothing", () => {
+    expect(summary(st(["reflect"]), "reflect")).toEqual([]);
+    expect(summary(st(["reflect"]), "ruminate")).toEqual([]);
   });
 });
 
@@ -113,14 +114,14 @@ describe("overrides", () => {
 });
 
 describe("house rules", () => {
-  it("Sarcasm + Cheer me on → passive-aggressive coach chip, no state change", () => {
+  it("Be sarcastic + Go easy on myself → house-rule chip, no state change", () => {
     const s = st(["cheer", "funny", "sarcasm"]);
     expect(summary(s, "sarcasm")).toContain("note:house-pa-coach:cheer");
     expect(visualState(s, resolve(s), "sarcasm")).toBe("warn");
   });
   it("five on → the sixth refuses (reducer)", () => {
     let s = { ...initialState };
-    for (const id of ["cheer", "funny", "brutal", "toxic", "eli5"] as Id[]) s = reducer(s, { type: "toggle", id });
+    for (const id of ["cheer", "funny", "brutal", "toxic", "reflect"] as Id[]) s = reducer(s, { type: "toggle", id });
     expect(s.on).toHaveLength(5);
     const r = reducer(s, { type: "toggle", id: "trauma" });
     expect(r.on).toHaveLength(5);
@@ -128,10 +129,9 @@ describe("house rules", () => {
   });
   it("a locked toggle does not count toward the five", () => {
     let s = { ...initialState };
-    // expert is locked by eli5, so only four are in force
-    for (const id of ["eli5", "expert", "cheer", "funny", "brutal"] as Id[]) s = reducer(s, { type: "toggle", id });
+    // sarcasm is locked by trauma, so only four are in force
+    for (const id of ["trauma", "funny", "sarcasm", "cheer", "reflect"] as Id[]) s = reducer(s, { type: "toggle", id });
     expect(s.on).toHaveLength(5);
-    // wait: expert was later, so eli5 is the locked one; still four effective
     const r = reducer(s, { type: "toggle", id: "toxic" });
     expect(r.refusal).toBeNull();
     expect(r.on).toHaveLength(6);
@@ -199,7 +199,7 @@ describe("url state", () => {
     expect(decodeState("?on=trauma,nope,trauma&over=sarcasm:zzz")).toEqual({ on: ["trauma"], overrides: { sarcasm: [] } });
     const h = reducer(initialState, {
       type: "hydrate",
-      on: ["cheer", "funny", "brutal", "toxic", "trauma", "expert"],
+      on: ["cheer", "funny", "brutal", "toxic", "trauma", "reflect"],
       overrides: { sarcasm: ["trauma"] }, // sarcasm isn't on and trauma's lock on it is real → allowed, turns it on
     });
     expect(h.on).toEqual(["cheer", "funny", "brutal", "toxic", "trauma", "sarcasm"]);
@@ -219,7 +219,7 @@ describe("wires", () => {
         "cheer-sarcasm:warn",
         "funny-brutal:warn",
         "funny-sarcasm:requires",
-        "eli5-expert:lock",
+        "reflect-ruminate:warn",
       ]),
     );
     expect(pairs.some((p) => p.includes("boost"))).toBe(false);

@@ -14,10 +14,11 @@ export const metadata: Metadata = {
 const BACKS: Record<SourceId, string> = {
   circumplex:
     "The whole compat() formula. Every lock, soften, warn and boost between two angled toggles comes from where they sit on this circle.",
-  hsq: "The split between Be funny and Sarcasm, the gentle variant, and why Sarcasm needs Be funny switched on first.",
+  hsq: "The split between Be funnier and Be sarcastic, the gentle variant, and why being sarcastic needs Be funnier switched on first.",
   gelkopf: "Why humor stays on, in its gentle form, when a heavy topic like trauma is on the board instead of being switched off.",
   egocentrism: "The permanent warning that rides along with Sarcasm.",
-  expertise: "Why “Explain things to me simply” and “Treat me like an expert” can’t both be on.",
+  selffocus:
+    "Why “Understand myself deeply” and “Stop overanalyzing myself” get flagged together: they look identical from the outside, and this is the paper that tells them apart.",
 };
 
 /** Evidence strength per source. Gelkopf is the only thin one; it says so itself. */
@@ -26,12 +27,12 @@ const STRENGTH: Record<SourceId, "strong" | "thin"> = {
   hsq: "strong",
   gelkopf: "thin",
   egocentrism: "strong",
-  expertise: "strong",
+  selffocus: "strong",
 };
 
 const GELKOPF_CAVEAT = REASONS["humor-gentle"].caveat;
 
-const NAMES = { target: "a toggle", by: "another toggle" };
+const NAMES = { target: "a toggle", by: "another toggle", targetPhrase: "one thing", byPhrase: "another" };
 
 export default function AboutPage() {
   const angled = TOGGLES.filter((t) => t.theta !== undefined);
@@ -55,9 +56,9 @@ export default function AboutPage() {
 
       <Section title="What it is">
         <p>
-          The subject is you. &ldquo;Resolve my childhood trauma&rdquo;, &ldquo;Cut all toxic relationships&rdquo;, &ldquo;Be funny&rdquo;: these
-          aren&rsquo;t settings for a piece of software, they&rsquo;re things people want. Some of them ask for opposite stances at
-          the same time. The board makes that visible, and when you ask why, the answer is a citation, not a joke.
+          The subject is you. &ldquo;Heal from my childhood&rdquo;, &ldquo;Cut off everyone toxic&rdquo;, &ldquo;Be funnier&rdquo;: every switch
+          is something a person wants to be or do, in one grammar. Some of them ask for opposite stances at the same
+          time. The board makes that visible, and when you ask why, the answer is a citation, not a joke.
         </p>
         <p>
           There is no AI in the loop and nothing is generated. Every reaction comes from a small, deterministic rule engine
@@ -100,18 +101,19 @@ export default function AboutPage() {
         </div>
         <p className="text-[14px] leading-[18px] text-graphite">
           0&deg; is warm, 90&deg; dominant, 180&deg; cold, 270&deg; submissive. The angles are defensible starting points, not
-          measurements. &ldquo;Cut all toxic relationships&rdquo; has no dedicated source for its placement, so any card it triggers
+          measurements. &ldquo;Cut off everyone toxic&rdquo; has no dedicated source for its placement, so any card it triggers
           says so.
         </p>
         <p>
-          <strong>Humor isn&rsquo;t one thing.</strong> &ldquo;Be funny&rdquo; is affiliative humor, the warm shared kind. Sarcasm is
-          aggressive humor, so it&rsquo;s a separate switch that needs Be funny on first. When a heavy goal is on the board,
+          <strong>Humor isn&rsquo;t one thing.</strong> &ldquo;Be funnier&rdquo; is affiliative humor, the warm shared kind. Sarcasm is
+          aggressive humor, so it&rsquo;s a separate switch that needs Be funnier on first. When a heavy goal is on the board,
           humor doesn&rsquo;t switch off; it drops to its gentle variant. That&rsquo;s the hatched state.
         </p>
         <p>
-          <strong>One more axis.</strong> How you want things explained to you isn&rsquo;t interpersonal at all. It&rsquo;s about
-          cognitive load, and it&rsquo;s a hard either-or: &ldquo;Explain things to me simply&rdquo; and &ldquo;Treat me like an expert&rdquo;
-          can&rsquo;t both be on.
+          <strong>One more axis.</strong> Attention turned inward isn&rsquo;t interpersonal, so it gets its own line under the
+          circle. &ldquo;Understand myself deeply&rdquo; and &ldquo;Stop overanalyzing myself&rdquo; look like the same habit from the
+          outside. Trapnell and Campbell split it in two: reflection runs on curiosity, rumination on worry. When both are
+          on, the board flags them together and the card explains the difference.
         </p>
       </Section>
 
@@ -179,23 +181,22 @@ export default function AboutPage() {
 
       <Section title="An honest note">
         <p>
-          No switch resolves trauma or ends a relationship. Flipping one records what you want and shows what that want asks
+          No switch heals a childhood or ends a relationship. Flipping one records what you want and shows what that want asks
           of the rest of you. The board can map the tension. The work is yours.
         </p>
       </Section>
 
-      <footer className="mt-16 text-[13px] leading-[18px] text-graphite">
+      <footer className="mt-16 flex flex-wrap items-end justify-between gap-x-8 gap-y-3 text-[13px] leading-[18px] text-graphite">
         <p>
           <Link href="/" className="text-ink underline underline-offset-2">
             Back to the board
           </Link>
         </p>
-        <p className="mt-2">
+        <p className="ml-auto shrink-0 text-right">
           Created by{" "}
           <a href="https://x.com/seeratawan01" target="_blank" rel="noreferrer" className="text-ink underline underline-offset-2">
             @seeratawan01
           </a>
-          .
         </p>
       </footer>
     </div>

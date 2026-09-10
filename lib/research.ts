@@ -1,6 +1,6 @@
 import type { Effect, ReasonId } from "./types";
 
-export type SourceId = "circumplex" | "hsq" | "gelkopf" | "egocentrism" | "expertise";
+export type SourceId = "circumplex" | "hsq" | "gelkopf" | "egocentrism" | "selffocus";
 
 export type Source = {
   id: SourceId;
@@ -39,20 +39,20 @@ export const SOURCES: Record<SourceId, Source> = {
     venue: "Journal of Personality and Social Psychology",
     url: "https://doi.org/10.1037/0022-3514.89.6.925",
   },
-  expertise: {
-    id: "expertise",
-    cite: "Kalyuga, Ayres, Chandler & Sweller (2003)",
-    title: "The expertise reversal effect",
-    venue: "Educational Psychologist",
-    url: "https://doi.org/10.1207/S15326985EP3801_4",
+  selffocus: {
+    id: "selffocus",
+    cite: "Trapnell & Campbell (1999)",
+    title: "Private self-consciousness and the five-factor model of personality: distinguishing rumination from reflection",
+    venue: "Journal of Personality and Social Psychology",
+    url: "https://doi.org/10.1037/0022-3514.76.2.284",
   },
 };
 
 export type Tier = "research" | "house" | "note";
 export type Evidence = "strong" | "thin";
 
-/** Names get substituted into copy. `target` and `by` are toggle labels. */
-export type Names = { target: string; by: string; variant?: string };
+/** Names get substituted into copy. `target`/`by` are labels; the phrases are gerunds ("healing from your childhood"). */
+export type Names = { target: string; by: string; targetPhrase: string; byPhrase: string; variant?: string };
 
 export type Reason = {
   id: ReasonId;
@@ -66,26 +66,26 @@ export type Reason = {
   sources?: SourceId[];
 };
 
-const lower = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
+const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 export const REASONS: Record<ReasonId, Reason> = {
   "circumplex-lock": {
     id: "circumplex-lock",
     tier: "research",
-    chip: (n) => `Switched off. It can't share a room with ${lower(n.by)}.`,
+    chip: (n) => `Switched off. It can't share a room with ${n.byPhrase}.`,
     title: (n) => `Why ${n.target} switched off`,
     why: (n) =>
-      `Wanting to ${lower(n.by)} asks for almost the opposite stance from ${lower(n.target)}. On the interpersonal circle, opposite points pull against each other, and these two sit about as far apart as it gets.`,
+      `${cap(n.byPhrase)} asks for almost the opposite stance from ${n.targetPhrase}. On the interpersonal circle, opposite points pull against each other, and these two sit about as far apart as it gets.`,
     evidence: "strong",
     sources: ["circumplex"],
   },
   "circumplex-soften": {
     id: "circumplex-soften",
     tier: "research",
-    chip: (n) => `Turned down, not off. It was pulling against ${lower(n.by)}.`,
+    chip: (n) => `Turned down, not off. It was pulling against ${n.byPhrase}.`,
     title: (n) => `Why ${n.target} got softer`,
     why: (n) =>
-      `${n.target} leans one way and wanting to ${lower(n.by)} asks for the other: warm against cool, or pushing against yielding. Not a full clash, so I kept it and took the edge off.`,
+      `${cap(n.targetPhrase)} leans one way and ${n.byPhrase} asks for the other: warm against cool, or pushing against yielding. Not a full clash, so I kept it and took the edge off.`,
     evidence: "strong",
     sources: ["circumplex"],
   },
@@ -93,9 +93,9 @@ export const REASONS: Record<ReasonId, Reason> = {
     id: "circumplex-warn",
     tier: "research",
     chip: () => "These two argue. Your call.",
-    title: (n) => `Why ${n.target} and ${lower(n.by)} argue`,
+    title: (n) => `Why ${n.targetPhrase} and ${n.byPhrase} argue`,
     why: (n) =>
-      `On the interpersonal circle, ${lower(n.target)} and ${lower(n.by)} sit about a quarter turn apart. Behaviors at right angles don't cancel out, but they don't back each other up either. Mixed together, they read as inconsistent.`,
+      `On the interpersonal circle, ${n.targetPhrase} and ${n.byPhrase} sit about a quarter turn apart. Behaviors at right angles don't cancel out, but they don't back each other up either. Mixed together, they read as inconsistent.`,
     evidence: "strong",
     sources: ["circumplex"],
   },
@@ -103,9 +103,9 @@ export const REASONS: Record<ReasonId, Reason> = {
     id: "circumplex-boost",
     tier: "research",
     chip: () => "These two get along.",
-    title: (n) => `Why ${n.target} and ${lower(n.by)} get along`,
+    title: (n) => `Why ${n.targetPhrase} and ${n.byPhrase} get along`,
     why: (n) =>
-      `${n.target} and ${lower(n.by)} are neighbors on the interpersonal circle. Nearby behaviors reinforce each other, so this pair reads as one consistent voice rather than two.`,
+      `${cap(n.targetPhrase)} and ${n.byPhrase} are neighbors on the interpersonal circle. Nearby behaviors reinforce each other, so this pair reads as one consistent voice rather than two.`,
     evidence: "strong",
     sources: ["circumplex"],
   },
@@ -113,7 +113,7 @@ export const REASONS: Record<ReasonId, Reason> = {
     id: "humor-gentle",
     tier: "research",
     chip: () => "Softer now. Heavy topic, so the jokes stay gentle.",
-    title: () => "Why the humor stayed on, just softer",
+    title: () => "Why being funnier stayed on, just softer",
     why: () =>
       "Humor isn't one thing. The warm, shared kind is affiliative humor, and reviews of humor in serious mental-health settings find it helps more than it hurts. So I kept it, in its gentle form.",
     evidence: "thin",
@@ -125,27 +125,27 @@ export const REASONS: Record<ReasonId, Reason> = {
     id: "sarcasm-text",
     tier: "research",
     chip: () => "Fair warning: your sarcasm lands worse in text than you think.",
-    title: () => "Why sarcasm always comes with a warning",
+    title: () => "Why being sarcastic always comes with a warning",
     why: () =>
       "People badly overestimate how well a sarcastic tone survives in writing. Senders expected readers to catch it about 80% of the time. Readers did about as well as a coin flip.",
     evidence: "strong",
     sources: ["egocentrism"],
   },
-  "expertise-reversal": {
-    id: "expertise-reversal",
+  "self-focus": {
+    id: "self-focus",
     tier: "research",
-    chip: () => "Switched off. Can't be both at once.",
-    title: (n) => `Why ${n.target} and ${lower(n.by)} can't both be on`,
+    chip: () => "Same habit from the outside. Curiosity or worry decides which.",
+    title: () => "Why the board flags these two together",
     why: () =>
-      "The scaffolding that helps a beginner, like worked examples and extra hand-holding, measurably slows an expert down. You can't be taught both ways at once.",
+      "From the outside, understanding yourself and overanalyzing yourself are one behavior: attention turned inward. The paper splits it in two. Reflection runs on curiosity and tracks openness; rumination runs on worry and tracks neuroticism. Same habit, different fuel.",
     evidence: "strong",
-    sources: ["expertise"],
+    sources: ["selffocus"],
   },
   "needs-funny": {
     id: "needs-funny",
     tier: "research",
     chip: (n) => `Switched off. Flip ${n.by} first; sarcasm is a kind of funny.`,
-    title: () => "Why Sarcasm needs Be funny",
+    title: () => "Why being sarcastic needs being funnier",
     why: () =>
       "Sarcasm is a humor style, the aggressive one, not a separate tone. With no humor underneath, there's nothing for it to be a variant of.",
     evidence: "strong",
@@ -161,9 +161,9 @@ export const REASONS: Record<ReasonId, Reason> = {
   "house-pa-coach": {
     id: "house-pa-coach",
     tier: "house",
-    chip: () => "You've invented the passive-aggressive pep talk.",
+    chip: () => "Gentle with yourself, but make it sarcastic.",
     title: () => "House rule",
-    why: () => "Cheering yourself on, sarcastically. There's no paper behind this one; it's just how the house runs.",
+    why: () => "Going easy on yourself, sarcastically. There's no paper behind this one; it's just how the house runs.",
   },
   "hold-firm": {
     id: "hold-firm",
@@ -178,7 +178,7 @@ export const REASONS: Record<ReasonId, Reason> = {
     chip: () => "Honest note: a switch can't do this.",
     title: () => "What flipping this actually does",
     why: () =>
-      "No switch resolves trauma. This one records that you want to, then shows what that want asks of the rest of you: softer humor, less bite, no sarcasm. The board can map the tension. The work is yours.",
+      "No switch heals a childhood. This one records that you want to, then shows what that want asks of the rest of you: softer humor, less bite, no sarcasm. The board can map the tension. The work is yours.",
   },
 };
 

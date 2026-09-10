@@ -5,10 +5,10 @@ export type Id =
   | "sarcasm"
   | "brutal"
   | "cheer"
-  | "eli5"
-  | "expert";
+  | "reflect"
+  | "ruminate";
 
-export type Kind = "outcome" | "style" | "depth";
+export type Kind = "outcome" | "style" | "focus";
 
 export type ReasonId =
   | "circumplex-lock"
@@ -17,7 +17,7 @@ export type ReasonId =
   | "circumplex-boost"
   | "humor-gentle"
   | "sarcasm-text"
-  | "expertise-reversal"
+  | "self-focus"
   | "needs-funny"
   | "house-too-many"
   | "house-pa-coach"
@@ -29,11 +29,15 @@ export type Toggle = {
   label: string;
   /** Short name for the circle diagram. */
   short?: string;
+  /** Gerund phrase for chips and cards: "healing from your childhood". */
+  phrase: string;
   kind: Kind;
   /** Degrees on the interpersonal circumplex. 0° warm, 90° dominant, 180° cold, 270° submissive. */
   theta?: number;
-  /** Depth toggles live on their own one-dimensional axis, not the circle. */
-  axis?: "knowledge";
+  /** Focus toggles live on their own one-dimensional axis, not the circle. Two toggles on one axis warn each other. */
+  axis?: "self-focus";
+  /** The reason attached when both ends of the axis are on. */
+  axisReason?: ReasonId;
   /** variants[0] is the default; variants[1] is what a soften drops to. */
   variants?: string[];
   /** This toggle only makes sense when these are on. Pairs joined by `requires` skip compat(). */

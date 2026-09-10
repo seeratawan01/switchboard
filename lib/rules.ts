@@ -56,9 +56,9 @@ function isOverridden(ctx: Ctx, target: Id, by: Id) {
 /**
  * Pure. Given the ordered set of ON toggles and the user's overrides, return every effect.
  * Order of operations (plan §5):
- *   1. locks from outcome→style compat, the depth axis, and `requires`
+ *   1. locks from outcome→style compat and `requires`
  *   2. the effective set = on minus unoverridden locks
- *   3. soften / warn / boost among the effective set (style↔style is capped at warn)
+ *   3. soften / warn / boost among the effective set (style↔style is capped at warn; a shared axis warns)
  *   4. house rules and notes last; they never change state
  */
 export function resolve(state: EngineState, toggles: Toggle[] = TOGGLES): Effect[] {
@@ -73,7 +73,7 @@ export function resolve(state: EngineState, toggles: Toggle[] = TOGGLES): Effect
   const onSet = new Set(on);
   const outcomes = toggles.filter((t) => t.kind === "outcome");
   const styles = toggles.filter((t) => t.kind === "style");
-  const depths = toggles.filter((t) => t.kind === "depth");
+  const axial = toggles.filter((t) => t.axis);
 
   const effects: Effect[] = [];
   const lock = (target: Id, by: Id, reason: Effect["reason"]) =>
@@ -87,16 +87,6 @@ export function resolve(state: EngineState, toggles: Toggle[] = TOGGLES): Effect
     }
   }
 
-  // 1b. Depth axis: hard mutual exclusion. If both are on, the later one wins.
-  const depthOn = on.filter((id) => byId[id].kind === "depth");
-  for (const d of depths) {
-    for (const other of depths) {
-      if (d.id === other.id || !onSet.has(other.id)) continue;
-      if (onSet.has(d.id) && depthOn.indexOf(d.id) > depthOn.indexOf(other.id)) continue; // d is later; d wins
-      lock(d.id, other.id, "expertise-reversal");
-    }
-  }
-
   const effectiveAfter = (fx: Effect[]) =>
     new Set(
       on.filter(
@@ -104,7 +94,7 @@ export function resolve(state: EngineState, toggles: Toggle[] = TOGGLES): Effect
       ),
     );
 
-  // 1c. `requires`: a toggle whose prerequisite is not effectively on is locked.
+  // 1b. `requires`: a toggle whose prerequisite is not effectively on is locked.
   const prelim = effectiveAfter(effects);
   for (const t of toggles) {
     for (const r of t.requires ?? []) {
@@ -154,7 +144,20 @@ export function resolve(state: EngineState, toggles: Toggle[] = TOGGLES): Effect
     }
   }
 
-  // 3d. Permanent warnings and notes.
+  // 3d. Toggles that share an axis look alike from the outside; both get the axis chip.
+  for (let i = 0; i < axial.length; i++) {
+    for (let j = i + 1; j < axial.length; j++) {
+      const a = axial[i];
+      const b = axial[j];
+      if (a.axis !== b.axis || !effective.has(a.id) || !effective.has(b.id)) continue;
+      const reason = a.axisReason ?? b.axisReason;
+      if (!reason) continue;
+      effects.push({ target: a.id, type: "warn", reason, by: b.id });
+      effects.push({ target: b.id, type: "warn", reason, by: a.id });
+    }
+  }
+
+  // 3e. Permanent warnings and notes.
   for (const t of toggles) {
     if (!effective.has(t.id)) continue;
     if (t.alwaysWarn) effects.push({ target: t.id, type: "warn", reason: t.alwaysWarn, by: t.id });
@@ -231,8 +234,8 @@ export function potentialPairs(
         out.push({ a: a.id, b: b.id, kind: "requires" });
         continue;
       }
-      if (a.kind === "depth" && b.kind === "depth") {
-        out.push({ a: a.id, b: b.id, kind: "lock" });
+      if (a.axis && a.axis === b.axis) {
+        out.push({ a: a.id, b: b.id, kind: "warn" });
         continue;
       }
       if (a.kind === "outcome" && b.kind === "outcome") continue;

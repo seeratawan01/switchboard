@@ -46,9 +46,9 @@ export function Circumplex({ toggles, state, effects }: { toggles: ToggleData[];
     opacity: { duration: 1.2, repeat: Infinity, ease: "easeInOut" as const },
   };
 
-  const eli5 = byId.eli5;
-  const expert = byId.expert;
-  const depthTension = on.has("eli5") && on.has("expert");
+  const reflect = byId.reflect;
+  const ruminate = byId.ruminate;
+  const axisTension = on.has("reflect") && on.has("ruminate") && !locked("reflect") && !locked("ruminate");
   const AX0 = 70;
   const AX1 = 250;
   const AY = 306;
@@ -61,7 +61,7 @@ export function Circumplex({ toggles, state, effects }: { toggles: ToggleData[];
         : "var(--color-warm)";
 
   return (
-    <svg viewBox="0 0 320 330" className="mx-auto block w-full max-w-[360px]" role="img" aria-label="Interpersonal circle showing which toggles are in tension">
+    <svg viewBox="-28 0 376 330" className="mx-auto block w-full max-w-[400px]" role="img" aria-label="Interpersonal circle showing which toggles are in tension">
       {/* axes */}
       <g stroke="var(--color-ink)" strokeOpacity={0.2} strokeWidth={1}>
         <line x1={CX - R} y1={CY} x2={CX + R} y2={CY} />
@@ -131,17 +131,18 @@ export function Circumplex({ toggles, state, effects }: { toggles: ToggleData[];
         );
       })}
 
-      {/* the knowledge axis: one dimension, not a circle */}
+      {/* the self-focus axis: one dimension, not a circle */}
       <g>
         <line x1={AX0} y1={AY} x2={AX1} y2={AY} stroke="var(--color-ink)" strokeWidth={1} />
-        {depthTension && (
+        {axisTension && (
           <motion.line
             x1={AX0}
             y1={AY}
             x2={AX1}
             y2={AY}
             stroke="var(--color-ink)"
-            strokeWidth={3}
+            strokeWidth={2}
+            strokeDasharray="5 4"
             strokeLinecap="round"
             initial={reduce ? false : { pathLength: 0 }}
             animate={{ pathLength: 1, ...hum }}
@@ -149,8 +150,8 @@ export function Circumplex({ toggles, state, effects }: { toggles: ToggleData[];
           />
         )}
         {[
-          { t: eli5, x: AX0, anchor: "end" as const, lx: AX0 - 12 },
-          { t: expert, x: AX1, anchor: "start" as const, lx: AX1 + 12 },
+          { t: reflect, x: AX0, anchor: "end" as const, lx: AX0 - 12 },
+          { t: ruminate, x: AX1, anchor: "start" as const, lx: AX1 + 12 },
         ].map(({ t, x, anchor, lx }) => {
           const isOn = on.has(t.id) && !locked(t.id);
           return (
@@ -172,7 +173,7 @@ export function Circumplex({ toggles, state, effects }: { toggles: ToggleData[];
                 fontWeight={isOn ? 600 : 400}
                 fill={isOn ? "var(--color-ink)" : "var(--color-graphite)"}
               >
-                {t.id === "eli5" ? "novice" : "expert"}
+                {t.short}
               </text>
             </g>
           );

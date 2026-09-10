@@ -1,15 +1,17 @@
 import type { Id, Toggle } from "./types";
 
 /**
- * Angles are tunable data, not code. Two differ from the plan's first draft
- * (brutal 120→95, sarcasm 150→135) so that all six interactions in plan §2a
- * fall out of compat() with the plan's thresholds unmodified. See rules.test.ts.
+ * Every label is something a person wants to be or do. One grammar, one question.
+ * Angles are tunable data, not code. brutal 95° and sarcasm 135° (not the plan's first
+ * draft) so that all six interactions in plan §2a fall out of compat() with the plan's
+ * thresholds unmodified. See rules.test.ts.
  */
 export const TOGGLES: Toggle[] = [
   {
     id: "trauma",
-    label: "Resolve my childhood trauma",
-    short: "trauma",
+    label: "Heal from my childhood",
+    short: "heal",
+    phrase: "healing from your childhood",
     kind: "outcome",
     theta: 320, // needs warmth, low dominance
     heavy: true,
@@ -17,24 +19,26 @@ export const TOGGLES: Toggle[] = [
   },
   {
     id: "toxic",
-    label: "Cut all toxic relationships",
+    label: "Cut off everyone toxic",
     short: "cut toxic",
+    phrase: "cutting off everyone toxic",
     kind: "outcome",
     theta: 45, // needs warmth and assertiveness
-    caveat:
-      "The stance for this goal is our placement, not a measured one. No dedicated source yet.",
+    caveat: "The stance for this one is our placement, not a measured one. No dedicated source yet.",
   },
   {
     id: "cheer",
-    label: "Cheer me on",
-    short: "cheer",
+    label: "Go easy on myself",
+    short: "easy on me",
+    phrase: "going easy on yourself",
     kind: "style",
-    theta: 10, // pure warmth
+    theta: 10, // pure warmth, turned inward
   },
   {
     id: "funny",
-    label: "Be funny",
-    short: "funny",
+    label: "Be funnier",
+    short: "funnier",
+    phrase: "being funnier",
     kind: "style",
     theta: 340, // affiliative humor: warm, a little deferential
     variants: ["playful", "gentle"],
@@ -42,32 +46,40 @@ export const TOGGLES: Toggle[] = [
   },
   {
     id: "brutal",
-    label: "Brutal honesty",
-    short: "brutal",
+    label: "Say exactly what I think",
+    short: "say it",
+    phrase: "saying exactly what you think",
     kind: "style",
     theta: 95, // dominant, a touch cool
     variants: ["direct", "kind"],
   },
   {
     id: "sarcasm",
-    label: "Sarcasm",
-    short: "sarcasm",
+    label: "Be sarcastic",
+    short: "sarcastic",
+    phrase: "being sarcastic",
     kind: "style",
     theta: 135, // hostile-dominant diagonal
     requires: ["funny"],
     alwaysWarn: "sarcasm-text",
   },
   {
-    id: "eli5",
-    label: "Explain things to me simply",
-    kind: "depth",
-    axis: "knowledge",
+    id: "reflect",
+    label: "Understand myself deeply",
+    short: "understand",
+    phrase: "understanding yourself deeply",
+    kind: "focus",
+    axis: "self-focus",
+    axisReason: "self-focus",
   },
   {
-    id: "expert",
-    label: "Treat me like an expert",
-    kind: "depth",
-    axis: "knowledge",
+    id: "ruminate",
+    label: "Stop overanalyzing myself",
+    short: "stop overanalyzing",
+    phrase: "not overanalyzing yourself",
+    kind: "focus",
+    axis: "self-focus",
+    axisReason: "self-focus",
   },
 ];
 

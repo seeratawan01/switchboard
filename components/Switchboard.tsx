@@ -87,9 +87,12 @@ export function Switchboard() {
         const reason = REASONS[open.reason];
         const byToggle = TOGGLE_BY_ID[open.by];
         const softened = effects.find((e) => e.target === open.target && e.reason === open.reason);
+        const targetToggle = TOGGLE_BY_ID[open.target];
         const names = {
-          target: TOGGLE_BY_ID[open.target].label,
+          target: targetToggle.label,
           by: byToggle.label,
+          targetPhrase: targetToggle.phrase,
+          byPhrase: byToggle.phrase,
           variant: softened?.type === "soften" ? softened.variant : undefined,
         };
         const evidence: Evidence | undefined = byToggle.caveat && reason.tier === "research" ? "thin" : reason.evidence;
@@ -141,7 +144,7 @@ export function Switchboard() {
                 className={cn(buttonBase, state.strict ? "bg-ink text-paper" : "bg-paper")}
                 onClick={() => send({ type: "strict", on: !state.strict })}
               >
-                Strict mode
+                Strict
               </button>
               {state.on.length > 0 && (
                 <button type="button" className={button} onClick={() => send({ type: "clear" })}>
