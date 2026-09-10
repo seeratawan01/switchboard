@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { AUTHOR, DESCRIPTION, KEYWORDS, SITE_NAME, SITE_URL, TAGLINE, jsonLd } from "@/lib/site";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -9,30 +10,30 @@ const inter = Inter({
   display: "swap",
 });
 
-const DESCRIPTION =
-  "What do you want for yourself? Flip on everything. Some of it can't be true at the same time, and the board shows you why, with the psychology behind it.";
-
-/** Absolute URLs for og:image and friends. Vercel sets the production URL at build; set NEXT_PUBLIC_SITE_URL elsewhere. */
-const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ??
-  (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "http://localhost:3000");
-
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: { default: "Switchboard", template: "%s · Switchboard" },
+  title: { default: `${SITE_NAME} · ${TAGLINE}`, template: `%s · ${SITE_NAME}` },
   description: DESCRIPTION,
+  applicationName: SITE_NAME,
+  keywords: KEYWORDS,
+  authors: [AUTHOR],
+  creator: AUTHOR.name,
+  category: "psychology",
+  alternates: { canonical: "/" },
+  robots: { index: true, follow: true },
   openGraph: {
     type: "website",
-    siteName: "Switchboard",
-    title: "What do you want for yourself?",
+    url: "/",
+    siteName: SITE_NAME,
+    title: TAGLINE,
     description: DESCRIPTION,
     locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
-    title: "What do you want for yourself?",
+    title: TAGLINE,
     description: DESCRIPTION,
-    creator: "@seeratawan01",
+    creator: AUTHOR.name,
   },
 };
 
@@ -42,10 +43,44 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
+const structuredData = [
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: SITE_NAME,
+    alternateName: TAGLINE,
+    url: SITE_URL,
+    description: DESCRIPTION,
+    inLanguage: "en",
+    author: { "@type": "Person", name: AUTHOR.name, url: AUTHOR.url },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: SITE_NAME,
+    url: SITE_URL,
+    description: DESCRIPTION,
+    applicationCategory: "EducationalApplication",
+    operatingSystem: "Any",
+    browserRequirements: "Requires JavaScript",
+    isAccessibleForFree: true,
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+    author: { "@type": "Person", name: AUTHOR.name, url: AUTHOR.url },
+    about: [
+      { "@type": "Thing", name: "Interpersonal circumplex" },
+      { "@type": "Thing", name: "Humor styles" },
+      { "@type": "Thing", name: "Reflection and rumination" },
+    ],
+  },
+];
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${inter.variable} h-full`}>
-      <body className="min-h-full">{children}</body>
+      <body className="min-h-full">
+        {children}
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(structuredData) }} />
+      </body>
     </html>
   );
 }

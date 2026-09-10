@@ -1,5 +1,9 @@
 import { Switchboard } from "@/components/Switchboard";
 
 export default function Page() {
-  return <Switchboard />;
+  return (
+    <main>
+      <Switchboard />
+    </main>
+  );
 }

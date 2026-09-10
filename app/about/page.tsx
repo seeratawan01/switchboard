@@ -4,10 +4,40 @@ import { TOGGLES } from "@/lib/toggles";
 import { THRESHOLDS } from "@/lib/rules";
 import { EVIDENCE_LABEL, REASONS, SOURCES, type SourceId } from "@/lib/research";
 import type { ReasonId } from "@/lib/types";
+import { AUTHOR, SITE_NAME, SITE_URL, jsonLd } from "@/lib/site";
+
+const ABOUT_DESCRIPTION =
+  "How Switchboard decides which of your wants fight each other: the interpersonal circumplex, humor styles, reflection versus rumination, and the five papers behind every card.";
 
 export const metadata: Metadata = {
-  title: "About",
-  description: "What the board is, how it decides which wants fight, and the five papers behind it.",
+  title: "About the research",
+  description: ABOUT_DESCRIPTION,
+  alternates: { canonical: "/about" },
+  openGraph: {
+    type: "article",
+    url: "/about",
+    title: `About the research · ${SITE_NAME}`,
+    description: ABOUT_DESCRIPTION,
+  },
+  twitter: { title: `About the research · ${SITE_NAME}`, description: ABOUT_DESCRIPTION },
+};
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "AboutPage",
+  name: `About ${SITE_NAME}`,
+  url: `${SITE_URL}/about`,
+  description: ABOUT_DESCRIPTION,
+  inLanguage: "en",
+  isPartOf: { "@type": "WebSite", name: SITE_NAME, url: SITE_URL },
+  author: { "@type": "Person", name: AUTHOR.name, url: AUTHOR.url },
+  citation: (Object.keys(SOURCES) as SourceId[]).map((sid) => ({
+    "@type": "ScholarlyArticle",
+    name: SOURCES[sid].title,
+    author: SOURCES[sid].cite,
+    isPartOf: { "@type": "Periodical", name: SOURCES[sid].venue },
+    url: SOURCES[sid].url,
+  })),
 };
 
 /** Plain-English line per source: what it backs on the board. */
@@ -39,7 +69,8 @@ export default function AboutPage() {
   const house = (Object.keys(REASONS) as ReasonId[]).map((k) => REASONS[k]).filter((r) => r.tier === "house");
 
   return (
-    <div className="mx-auto max-w-[720px] px-4 py-8 sm:px-8 md:py-12">
+    <main className="mx-auto max-w-[720px] px-4 py-8 sm:px-8 md:py-12">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(structuredData) }} />
       <header className="mb-12">
         <p className="mb-3 flex items-baseline gap-4 text-[14px] leading-[18px]">
           <Link href="/" className="font-semibold hover:underline hover:underline-offset-2">
@@ -199,7 +230,7 @@ export default function AboutPage() {
           </a>
         </p>
       </footer>
-    </div>
+    </main>
   );
 }
 
