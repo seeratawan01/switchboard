@@ -6,7 +6,7 @@ import { EVIDENCE_LABEL, REASONS, SOURCES, type SourceId } from "@/lib/research"
 import type { ReasonId } from "@/lib/types";
 
 export const metadata: Metadata = {
-  title: "About Switchboard",
+  title: "About",
   description: "What the board is, how it decides which wants fight, and the five papers behind it.",
 };
 

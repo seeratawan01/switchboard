@@ -53,6 +53,8 @@ pnpm build        # static export → out/
 
 Requires Node 20+ and pnpm. The build is a fully static site with no server, so `out/` can be hosted anywhere.
 
+Social previews (Open Graph and Twitter cards) need an absolute URL. On Vercel it's picked up automatically from the production domain; anywhere else, set `NEXT_PUBLIC_SITE_URL=https://your-domain` before `pnpm build`.
+
 Add `?debug=1` to the URL for angle sliders and a live compatibility readout.
 
 ## Project layout
